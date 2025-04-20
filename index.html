@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindBloom - Inicio</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    @font-face {
+      font-family: 'DarlingCoffee';
+      src: url('DarlingCoffee.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'MilkyNice';
+      src: url('MilkyNice.ttf') format('truetype');
+    }
+    .mascota-imagen img {
+      width: 80%;
+      max-width: 300px;
+      display: block;
+      margin: 0 auto;
+    }
+    .input-section, .botones-principales {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    select, input, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="mensaje" id="mensaje" style="font-family: 'DarlingCoffee', sans-serif;">
+    Hola, soy tu acompañante en MindBloom
+  </div>
+
+  <div class="input-section" id="naming-section">
+    <input type="text" id="nombreMascota" placeholder="Escribe el nombre de tu mascota" />
+    <br /><br />
+    <button onclick="guardarNombre()" style="font-family: 'MilkyNice', sans-serif;">
+      Guardar nombre de tu mascota
+    </button>
+  </div>
+
+  <div class="input-section" id="mascota-section">
+    <label for="mascota" style="font-family: 'DarlingCoffee', sans-serif;">Elige tu mascota:</label>
+    <br /><br />
+    <select id="mascota" onchange="mostrarMascota()" style="font-family: 'MilkyNice', sans-serif;">
+      <option value="">--Selecciona--</option>
+      <option value="gato">gatito</option>
+      <option value="perro">perrito</option>
+      <option value="hamster">hamster</option>
+    </select>
+  </div>
+
+  <div class="mascota-imagen"></div>
+
+  <div class="botones-principales">
+    <a href="diario.html"><button style="font-family: 'MilkyNice', sans-serif;">Diario Emocional</button></a>
+    <a href="chat.html"><button style="font-family: 'MilkyNice', sans-serif;">Chat con IA</button></a>
+    <a href="respiración.html"><button style="font-family: 'MilkyNice', sans-serif;">Ejercicios de Respiración</button></a>
+    <a href="ayuda.html"><button style="font-family: 'MilkyNice', sans-serif;">Diagnóstico Emocional</button></a>
+  </div>
+
+  <script>
+    function guardarNombre() {
+      const nombre = document.getElementById('nombreMascota').value.trim();
+      if (nombre) {
+        localStorage.setItem('nombreMascota', nombre);
+        document.getElementById('mensaje').innerText = `Hola, soy ${nombre}, tu acompañante en MindBloom`;
+        document.getElementById('naming-section').style.display = 'none';
+      }
+    }
+
+    function obtenerImagenAleatoria(mascota) {
+      const num = Math.floor(Math.random() * 5) + 1;
+      let nombreImagen = '';
+      if (num === 1) {
+        // Imagen principal de cada mascota
+        if (mascota === 'gato') nombreImagen = 'gatito-removebg-preview.png';
+        else if (mascota === 'perro') nombreImagen = 'perrito-removebg-preview.png';
+        else if (mascota === 'hamster') nombreImagen = 'hamster-removebg-preview.png';
+      } else {
+        // Imágenes numeradas 2-5
+        if (mascota === 'gato') nombreImagen = `cat${num}-removebg-preview.png`;
+        else if (mascota === 'perro') nombreImagen = `dog${num}-removebg-preview.png`;
+        else if (mascota === 'hamster') nombreImagen = `ham${num}-removebg-preview.png`;
+      }
+      return nombreImagen;
+    }
+
+    function mostrarImagen(mascota) {
+      const contenedor = document.querySelector('.mascota-imagen');
+      const imagenNombre = obtenerImagenAleatoria(mascota);
+      contenedor.innerHTML = `<img src="${imagenNombre}" alt="${mascota}" />`;
+    }
+
+    function mostrarMascota() {
+      const seleccion = document.getElementById('mascota').value;
+      if (seleccion) {
+        localStorage.setItem('mascotaSeleccionada', seleccion);
+        mostrarImagen(seleccion);
+        document.getElementById('mascota-section').style.display = 'none';
+      }
+    }
+
+    window.onload = () => {
+      const nombreGuardado = localStorage.getItem('nombreMascota');
+      const mascotaGuardada = localStorage.getItem('mascotaSeleccionada');
+
+      if (nombreGuardado) {
+        document.getElementById('mensaje').innerText = `Hola, soy ${nombreGuardado}, tu acompañante en MindBloom`;
+        document.getElementById('naming-section').style.display = 'none';
+      }
+
+      if (mascotaGuardada) {
+        document.getElementById('mascota').value = mascotaGuardada;
+        mostrarImagen(mascotaGuardada);
+        document.getElementById('mascota-section').style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>
