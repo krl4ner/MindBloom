@@ -1,0 +1,18 @@
+/* Ejemplo de estilo para los botones */
+.boton-relajacion, .boton-ansiedad, .boton-panico {
+  padding: 12px 30px;        /* Más espacio interno horizontal para alargar */
+  font-size: 16px;           /* Tamaño de letra legible */
+  border-radius: 25px;       /* Bordes redondeados para un look más suave */
+  width: auto;               /* Que el ancho dependa del contenido + padding */
+  min-width: 180px;          /* Ancho mínimo para que no se vean aplastados */
+  height: 45px;              /* Altura suficiente para no verse aplastados */
+  display: inline-block;     /* Para que respeten el tamaño y se alineen */
+  text-align: center;        /* Texto centrado */
+  box-sizing: border-box;    /* Para que padding no afecte tamaño total */
+}
+
+/* Opcional: espacio entre botones */
+.boton-relajacion + .boton-ansiedad,
+.boton-ansiedad + .boton-panico {
+  margin-left: 15px;
+}

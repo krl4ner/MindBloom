@@ -1,0 +1,154 @@
+.calendario-tracker {
+    padding: 1rem;
+    text-align: center;
+    font-family: 'MilkyNice', sans-serif;
+  }
+  
+  #calendario {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 1rem;
+  }
+  
+  .dia {
+    border: 1px solid #ffe0c1ff;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #faebcd;
+  }
+  
+  .dia:hover {
+    background-color: #ffe6cc;
+  }
+  
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .modal-contenido {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .cerrar {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .emociones img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: transform 0.2s ease;
+  }
+  .emociones img:hover {
+    transform: scale(1.2);
+  }
+
+  .header {
+  display: flex;
+  align-items: center; /* Centra verticalmente */
+  max-width: 100%;
+}
+
+.back-arrow {
+  flex: 0 0 20%; /* No crece, no encoge, ancho base 20% */
+  font-size: 1.5rem; /* Tamaño de flecha */
+  cursor: pointer;
+  text-align: left;
+}
+
+.frase-del-dia {
+  flex: 1; /* Ocupa el resto del espacio */
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding-left: 10px;
+}
+
+  
+  textarea {
+    width: 90%;
+    height: 100px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    resize: none;
+  }
+
+  .emociones {
+    text-align: center;
+    margin: 10px 0;
+  }
+  .emociones img {
+    width: 40px;
+    height: auto;
+    margin: 0 8px;
+    cursor: pointer;
+    transition: width 0.2s, margin 0.2s;
+  }
+  .emocion-grande {
+    width: 120px !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto 20px auto !important;
+    cursor: default;
+  }
+  #btnCambiarEmocion {
+    display: block;
+    margin: 0 auto 15px auto;
+    background-color: #ffe0c1ff;
+    color: #8C7B75;
+    font-family: 'MilkyNice', sans-serif;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 35px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #btnCambiarEmocion:hover {
+    background: #ffd4b3;
+  }
+
+  .modal-contenido {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+    color: #8C7B75;
+    display: flex;              /* Convertimos en flex container */
+    flex-direction: column;   /* Alinear los elementos verticalmente */
+    justify-content: center;  /* Centrar horizontalmente */
+    align-items: center;      /* Centrar verticalmente */
+  }
+  
+  textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    resize: none;
+    font-family: inherit;
+    color: #8C7B75;
+    text-align: center;      /* Centrar el texto dentro del textarea */
+  }
+  
+  

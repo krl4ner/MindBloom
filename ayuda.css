@@ -1,0 +1,33 @@
+.header-container {
+    display: flex;
+    align-items: center;      /* Alinea verticalmente */
+    gap: 1rem;                /* Espacio horizontal entre flecha y recuadro */
+    padding: 1rem 1.5rem;     /* Espacio alrededor */
+  }
+  
+  /* Quitar position absolute para que la flecha esté en el flujo */
+  .flecha-regreso {
+    position: static;          /* o simplemente eliminar position */
+    background-color: #ffe0c1ff;
+    color: #8C7B75;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-family: 'MilkyNice', sans-serif;
+    flex-shrink: 0;            /* para que no se reduzca */
+  }
+  
+  /* Mantener estilos del recuadro */
+  .advertencia {
+    background-color: #ffe0c1ff;
+    color: #8C7B75;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-family: 'MilkyNice', sans-serif;
+    text-align: left;          /* para que el texto quede alineado a la izquierda */
+    flex: 1;                   /* que ocupe el espacio restante */
+  }
+  

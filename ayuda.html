@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diagnóstico Emocional</title>
+  <link rel="stylesheet" href="ayuda.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @font-face { font-family: 'MilkyNice'; src: url('MilkyNice.ttf') format('truetype'); }
+    body { background-color: #FFF5E1; margin: 0; padding: 0; font-family: sans-serif; }
+    /* Contenedor flex para la flecha y el recuadro */
+    .header-container {
+      display: flex;
+      align-items: center; /* Alinea verticalmente */
+      gap: 1rem;           /* Espacio horizontal entre la flecha y el recuadro */
+      padding: 1rem 1.5rem;  /* Espacio alrededor */
+    }
+    .advertencia {
+      /* Estilos similares a la flecha de regreso */
+      background-color: #ffe0c1ff;
+      color: #8C7B75;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-family: 'MilkyNice', sans-serif;
+      text-align: center;
+      margin: 0; /* Eliminar el margen predeterminado */
+      flex: 1; /* Ocupar el espacio restante */
+    }
+    /* Quitar position absolute para que la flecha esté en el flujo */
+    .flecha-regreso {
+      position: static;
+      background-color: #ffe0c1ff;
+      color: #8C7B75;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-family: 'MilkyNice', sans-serif;
+    }
+    .graficas { display: flex; flex-direction: column; align-items: center; gap: 2rem; padding: 2rem 1rem; }
+    .grafica-container { width: 90%; max-width: 600px; background-color: #fff0dc; border-radius: 15px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; position: relative; }
+    canvas { width: 100% !important; height: 300px !important; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10; }
+    .modal-content { background: #fff0dc; padding: 2rem; border-radius: 12px; width: 90%; max-width: 400px; font-family: 'MilkyNice', sans-serif; position: relative; }
+    .modal-close { position: absolute; top: 8px; left: 8px; background: transparent; border: none; font-size: 1.2rem; cursor: pointer; }
+    .modal-content p { font-size: 1.2rem; color: #5e4632ff; margin-top: 1.5rem; }
+    .opciones { margin-top: 1rem; }
+    .opciones button { display: block; margin: 0.5rem 0; width: 100%; padding: 0.5rem; border: none; border-radius: 8px; background-color: #ffe0c1ff; font-family: 'MilkyNice', sans-serif; font-size: 1rem; cursor: pointer; }
+    .opciones button.selected { background-color: #D1B7AE; }
+    /* Botones sin position absolute y bien espaciados */
+    .next-btn {
+      background-color: #D1B7AE;
+      border-radius: 12px;
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border: none;
+      font-family: serif;
+      margin-top: 1.5rem;
+      float: right;
+      position: relative; /* quitar absolute */
+    }
+    .guardar-btn {
+      background-color: #D1B7AE;
+      border-radius: 12px;
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border: none;
+      font-family: serif;
+      margin-top: 3rem;
+      float: right;
+      position: relative; /* quitar absolute */
+      display: block;
+      clear: both;
+    }
+    .resultado-final {
+      background-color: #fff0dc;
+      padding: 1.5rem;
+      margin: 1rem;
+      border-radius: 12px;
+      font-family: 'MilkyNice', sans-serif;
+      color: #5e4632ff;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    /* Media query para pantallas más pequeñas */
+    @media (max-width: 480px) {
+      .grafica-container {
+        padding: 0.5rem;
+      }
+      canvas {
+        height: 200px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenedor flex para la flecha y el recuadro -->
+  <div class="header-container">
+    <button class="flecha-regreso" onclick="window.location.href='index.html'">←</button>
+    <div class="advertencia">
+      Recuerda que esto no es un diagnóstico profesional, sino una guía para entender de mejor manera lo que puedes estar sintiendo. Por lo mismo, en caso de presentar algún índice alto te recomendamos acudir con un profesional.
+    </div>
+  </div>
+  <div class="graficas">
+    <div class="grafica-container" onclick="iniciarEncuesta('ansiedad')">
+      <canvas id="graficaAnsiedad"></canvas>
+      <div id="resultadoAnsiedad" class="resultado-final" style="display:none;"></div>
+    </div>
+    <div class="grafica-container" onclick="iniciarEncuesta('depresion')">
+      <canvas id="graficaDepresion"></canvas>
+      <div id="resultadoDepresion" class="resultado-final" style="display:none;"></div>
+    </div>
+    <div class="grafica-container" onclick="iniciarEncuesta('autoestima')">
+      <canvas id="graficaAutoestima"></canvas>
+      <div id="resultadoAutoestima" class="resultado-final" style="display:none;"></div>
+    </div>
+  </div>
+  <div id="modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" onclick="cerrarEncuesta()">✕</button>
+      <p id="preguntaTexto"></p>
+      <div class="opciones" id="opcionesContainer"></div>
+      <button class="next-btn" id="nextBtn" onclick="siguientePregunta()">Siguiente</button>
+    </div>
+  </div>
+  <script>
+    // Preguntas de ejemplo
+    const preguntasAnsiedad = [
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia te has sentido preocupado/a por cosas diferentes?', opciones: ['0 - No me he preocupado en absoluto','1 - Algunos días','2 - Más de la mitad de los días','3 - Casi todos los días'] },
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia has notado que te cuesta relajarte o estar tranquilo/a?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - Muy a menudo'] },
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia has sentido que la ansiedad te dificulta realizar tus actividades diarias?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo'] },
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia has experimentado síntomas físicos de ansiedad, como palpitaciones o sudoración?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo'] },
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia has evitado situaciones o lugares por temor a sentir ansiedad?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo'] },
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia has tenido dificultades para conciliar el sueño debido a la preocupación o el estrés?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo'] },
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia te has sentido irritable o inquieto/a?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo'] }
+    ];
+    const preguntasDepresion = [
+      { texto: 'En las últimas dos semanas, ¿con qué frecuencia te has sentido triste, deprimido/a o desesperanzado/a?', opciones: ['0 - Nunca o casi nunca','1 - Algunos días','2 - Más de la mitad de los días','3 - Casi todos los días'] },
+      { texto: 'En las últimas dos semanas, ¿has notado disminución de interés o placer en actividades antes disfrutadas?', opciones: ['0 - No, en absoluto','1 - Un poco','2 - Moderadamente','3 - Mucho'] },
+      { texto: 'En las últimas dos semanas, ¿has experimentado cambios significativos en apetito o peso?', opciones: ['0 - No he notado cambios','1 - Ligeramente','2 - Moderadamente','3 - Significativamente'] },
+      { texto: 'En las últimas dos semanas, ¿has tenido dificultades para conciliar el sueño o has dormido demasiado?', opciones: ['0 - No he tenido problemas','1 - Un poco','2 - Moderadamente','3 - Mucho'] },
+      { texto: 'En las últimas dos semanas, ¿te has sentido cansado/a o con falta de energía casi todos los días?', opciones: ['0 - No, en absoluto','1 - Un poco','2 - Moderadamente','3 - Mucho'] },
+      { texto: 'En las últimas dos semanas, ¿te has sentido inquieto/a o lento/a en movimientos y pensamientos?', opciones: ['0 - No, en absoluto','1 - Un poco','2 - Moderadamente','3 - Mucho'] },
+      { texto: 'En las últimas dos semanas, ¿has tenido pensamientos sobre la muerte o el suicidio?', opciones: ['0 - No, en absoluto','1 - Rara vez','2 - A veces','3 - A menudo'] }
+    ];
+    const preguntasAutoestima = [
+      { texto: 'En general, ¿cómo te sientes contigo mismo/a?', opciones: ['0 - Muy bien','1 - Bien','2 - Neutral','3 - Mal','4 - Muy mal'] },
+      { texto: '¿Con qué frecuencia te criticas a ti mismo/a?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo','4 - Constantemente'] },
+      { texto: '¿Cómo reaccionas ante los errores o fracasos?', opciones: ['0 - Los acepto como aprendizaje','1 - Me siento un poco decepcionado/a','2 - Me siento frustrado/a','3 - Me siento inútil','4 - Me culpo severamente'] },
+      { texto: '¿Con qué frecuencia te comparas con los demás?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo','4 - Constantemente'] },
+      { texto: '¿Cómo te sientes cuando recibes un cumplido o reconocimiento?', opciones: ['0 - Lo acepto con gratitud','1 - Me siento un poco incómodo/a','2 - Lo minimizo','3 - No lo creo','4 - Lo rechazo'] },
+      { texto: '¿Con qué frecuencia te sientes inseguro/a en situaciones sociales?', opciones: ['0 - Nunca','1 - Rara vez','2 - A veces','3 - A menudo','4 - Constantemente'] },
+      { texto: '¿Cómo te sientes con respecto a tu apariencia física?', opciones: ['0 - Muy satisfecho/a','1 - Satisfecho/a','2 - Neutral','3 - Insatisfecho/a','4 - Muy insatisfecho/a'] }
+    ];
+
+    let encuestaActual = [], indicePregunta = 0, respuestas = [], tipoEncuesta = '';
+    function iniciarEncuesta(tipo) {
+      tipoEncuesta = tipo;
+      if (tipo === 'ansiedad') encuestaActual = preguntasAnsiedad;
+      if (tipo === 'depresion') encuestaActual = preguntasDepresion;
+      if (tipo === 'autoestima') encuestaActual = preguntasAutoestima;
+      indicePregunta = 0;
+      respuestas = [];
+      mostrarPregunta();
+      document.getElementById('modal').style.display = 'flex';
+      ['Ansiedad','Depresion','Autoestima'].forEach(t => document.getElementById('resultado' + t).style.display = 'none');
+      // Elimina botón Guardar si aún existe
+      const modal = document.querySelector('.modal-content');
+      const btnGuardarExistente = modal.querySelector('.guardar-btn');
+      if(btnGuardarExistente) btnGuardarExistente.remove();
+      document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function mostrarPregunta() {
+      const p = encuestaActual[indicePregunta];
+      document.getElementById('preguntaTexto').textContent = p.texto;
+      const c = document.getElementById('opcionesContainer');
+      c.innerHTML = '';
+      p.opciones.forEach((o, i) => {
+        const b = document.createElement('button');
+        b.textContent = o;
+        b.onclick = () => {
+          respuestas[indicePregunta] = i;
+          c.querySelectorAll('button').forEach(x => x.classList.remove('selected'));
+          b.classList.add('selected');
+        };
+        // Si ya hay respuesta para esta pregunta, márcala seleccionada
+        if(respuestas[indicePregunta] === i) b.classList.add('selected');
+        c.appendChild(b);
+      });
+    }
+
+    function siguientePregunta() {
+      if (respuestas[indicePregunta] == null) {
+        alert('Selecciona una opción.');
+        return;
+      }
+      indicePregunta++;
+      if (indicePregunta < encuestaActual.length) {
+        mostrarPregunta();
+      } else {
+        mostrarGuardar();
+      }
+    }
+
+    function mostrarGuardar() {
+      document.getElementById('nextBtn').style.display = 'none';
+      const modal = document.querySelector('.modal-content');
+
+      // Elimina previamente todos los botones guardar (por si hay duplicados)
+      const prevGuardar = modal.querySelector('.guardar-btn');
+      if(prevGuardar) prevGuardar.remove();
+
+      const guard = document.createElement('button');
+      guard.className = 'guardar-btn';
+      guard.textContent = 'Guardar';
+      guard.onclick = guardarResultado;
+      modal.appendChild(guard);
+    }
+
+    function cerrarEncuesta() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function guardarResultado() {
+      cerrarEncuesta();
+      const resultado = respuestas.reduce((a, b) => a + b, 0);
+
+      let color = '#5e4632ff', mensaje = '';
+      if (resultado <= 7) {
+        mensaje = 'bajo';
+        color = '#4CAF50';
+      } else if (resultado <= 14) {
+        mensaje = 'medio';
+        color = '#FFEB3B';
+      } else if (resultado <= 21) {
+        mensaje = 'moderado';
+        color = '#FF9800';
+      } else {
+        mensaje = 'severo';
+        color = '#F44336';
+      }
+
+      const tit = { ansiedad: 'Ansiedad', depresion: 'Depresion', autoestima: 'Autoestima' }[tipoEncuesta];
+      const box = document.getElementById('resultado' + tit);
+      box.textContent = `${tit}: ${resultado}/28 - nivel ${mensaje}`;
+      box.style.display = 'block';
+
+      actualizarGrafica(resultado, color);
+
+      localStorage.setItem(tipoEncuesta, JSON.stringify({ valor: resultado, fecha: Date.now() }));
+    }
+
+    function actualizarGrafica(puntaje, color) {
+      const ctx = document.getElementById('grafica' + tipoEncuesta.charAt(0).toUpperCase() + tipoEncuesta.slice(1)).getContext('2d');
+      const chart = Chart.getChart(ctx);
+      if (chart) {
+        chart.data.datasets[0].data[0] = puntaje;
+        chart.data.datasets[0].backgroundColor[0] = color;
+        chart.data.datasets[0].borderColor[0] = color;
+        chart.update();
+      }
+    }
+
+    function crearGrafica(id,label){
+      const ctx=document.getElementById(id).getContext('2d');
+      new Chart(ctx,{type:'line',data:{labels:['Día 1'],datasets:[{label,data:[0],borderColor:'#8C7B75',backgroundColor:'#ffe0c1ff',tension:0.3,pointRadius:6,pointBackgroundColor:['#ffe0c1ff']}]},
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              min: 0,
+              max: 28,
+              ticks: {
+                stepSize: 1,
+                callback: function(value) {
+                  if (value === 0) return 'Ninguno';
+                  else if (value >= 1 && value <= 6) return 'Medio';
+                  else if (value >= 7 && value <= 14) return 'Moderado';
+                  else if (value >= 15 && value <= 22) return 'Mayor';
+                  else if (value >= 23 && value <= 28) return 'Severo';
+                  else return '';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Carga resultados guardados y actualiza gráficas y texto
+    function cargarResultadosGuardados() {
+      ['ansiedad', 'depresion', 'autoestima'].forEach(tipo => {
+        const dataJSON = localStorage.getItem(tipo);
+        if (!dataJSON) return;
+        const data = JSON.parse(dataJSON);
+        // Si el dato no tiene más de 30 días, mostrarlo
+        if (Date.now() - data.fecha < 30 * 24 * 60 * 60 * 1000) {
+          const tit = { ansiedad: 'Ansiedad', depresion: 'Depresion', autoestima: 'Autoestima' }[tipo];
+          const box = document.getElementById('resultado' + tit);
+          let mensaje = '';
+          if(data.valor <= 7) mensaje = 'bajo';
+          else if(data.valor <= 14) mensaje = 'medio';
+          else if(data.valor <= 21) mensaje = 'moderado';
+          else mensaje = 'severo';
+          box.textContent = `${tit}: ${data.valor}/28 - nivel ${mensaje}`;
+          box.style.display = 'block';
+          actualizarGrafica(data.valor, '#5e4632ff');
+        }
+      });
+    }
+    // Llama a crearGrafica para cada canvas al cargar la página
+    window.onload = function() {
+      crearGrafica('graficaAnsiedad','Ansiedad');
+      crearGrafica('graficaDepresion','Depresión');
+      crearGrafica('graficaAutoestima','Autoestima');
+      cargarResultadosGuardados();
+    };
+  </script>
+</body>
+</html>
